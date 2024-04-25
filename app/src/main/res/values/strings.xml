@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">ReservationProgram</string>
-    <string name="textTime">예약에 걸린 시간 : </string>
+    <string name="textTime">예약됨</string>
     <string name="btnStart">예약 시작</string>
     <string name="btnDone">예약 확정</string>
     <string name="radioDate">날짜 설정</string>
