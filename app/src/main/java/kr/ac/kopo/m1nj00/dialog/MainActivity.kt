@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
             var dialog = AlertDialog.Builder(this@MainActivity)
             dialog.setTitle("곧 갈 여행지")
             dialog.setIcon(R.drawable.icon1)
-            dialog.setSingleChoiceItems(placesArr, 1) {d1, which ->
+            dialog.setMultiChoiceItems(placesArr, selectArr) { d1, which, isChecked ->
                 btnDialog.text = placesArr[which]
             }
             dialog.show()
