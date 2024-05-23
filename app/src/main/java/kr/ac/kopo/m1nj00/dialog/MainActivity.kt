@@ -13,12 +13,15 @@ class MainActivity : AppCompatActivity() {
 
         var btnDialog = findViewById<Button>(R.id.btnDialog)
         btnDialog.setOnClickListener{
+            var placesArr = arrayOf("제주도", "대만", "일본")
             var dialog = AlertDialog.Builder(this@MainActivity)
-            dialog.setTitle("안내메시지")
-            dialog.setMessage("REAL MESSAGE!!!!!!!!!!!!!!!!!")
+            dialog.setTitle("곧 갈 여행지")
             dialog.setIcon(R.drawable.icon1)
-            dialog.setPositiveButton("확인") {dialog, which ->
-                Toast.makeText(this@MainActivity, "확인 버튼 클릭!", Toast.LENGTH_SHORT).show()
+            dialog.setItems(placesArr){ d1, which ->
+                btnDialog.text = placesArr[which]
+            }
+            dialog.setPositiveButton("닫기") {dialog, which ->
+                Toast.makeText(this@MainActivity, "성공적으로 종료했습니당", Toast.LENGTH_SHORT).show()
             }
             dialog.show()
         }
