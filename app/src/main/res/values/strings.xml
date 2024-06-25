@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FinalApplication</string>
+    <string name="header_image_desc">Header Image</string>
 </resources>

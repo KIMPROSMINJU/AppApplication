@@ -1,72 +1,84 @@
 package kr.ac.kopo.m1nj00.finalapplication
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.DatePicker
-import android.widget.DatePicker.OnDateChangedListener
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import java.io.FileInputStream
 import java.io.IOException
 import java.util.Calendar
 
-
 class MainActivity : AppCompatActivity() {
-    var dp: DatePicker? = null
-    var edtDiary: EditText? = null
-    var btnWrite: Button? = null
-    var fileName: String? = null
+    private var dp: DatePicker? = null
+    private var edtDiary: EditText? = null
+    private var btnWrite: Button? = null
+    private var fileName: String? = null
+    private var btnSecretDiary: Button? = null
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        title = "간단 일기장"
+        title = "Secret Diary"
+
         dp = findViewById(R.id.datePicker1)
         edtDiary = findViewById(R.id.edtDiary)
         btnWrite = findViewById(R.id.btnWrite)
+        btnSecretDiary = findViewById(R.id.btnSecretDiary)
+
         val cal = Calendar.getInstance()
         val cYear = cal[Calendar.YEAR]
         val cMonth = cal[Calendar.MONTH]
         val cDay = cal[Calendar.DAY_OF_MONTH]
-        fileName = cYear.toString() + "_" + (cMonth + 1) + "_" + cDay + ".txt"
+        fileName = "${cYear}.${cMonth + 1}.$cDay recording"
         val str = readDiary(fileName)
         edtDiary?.setText(str)
-        (dp as? DatePicker)?.init(cYear, cMonth, cDay,
-            DatePicker.OnDateChangedListener { view, year, monthOfYear, dayOfMonth ->
-                fileName = year.toString() + "_" + (monthOfYear + 1) + "_" + dayOfMonth + ".txt"
-                val str = readDiary(fileName)
-                edtDiary?.setText(str)
-                btnWrite?.isEnabled = true
-            })
-        btnWrite?.let { button ->
-            button.setOnClickListener {
-                try {
-                    val outFs = openFileOutput(fileName, MODE_PRIVATE)
-                    val str = edtDiary?.text.toString()
-                    outFs.write(str.toByteArray())
-                    outFs.close()
-                    Toast.makeText(applicationContext, "$fileName 이 저장됨", Toast.LENGTH_SHORT).show()
-                } catch (e: IOException) {
-                    // Handle exception
+
+        dp?.init(cYear, cMonth, cDay, DatePicker.OnDateChangedListener { _, year, monthOfYear, dayOfMonth ->
+            fileName = "${year}.${monthOfYear + 1}.$dayOfMonth recording"
+            val str = readDiary(fileName)
+            edtDiary?.setText(str)
+            btnWrite?.isEnabled = true
+        })
+
+        btnWrite?.setOnClickListener {
+            try {
+                val outFs = openFileOutput(fileName, MODE_PRIVATE)
+                val str = edtDiary?.text.toString()
+                outFs.write(str.toByteArray())
+                outFs.close()
+
+                if (btnWrite?.text == "New Writing") {
+                    Toast.makeText(applicationContext, "$fileName enrolled!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(applicationContext, "$fileName modified!", Toast.LENGTH_SHORT).show()
                 }
+                btnWrite?.text = "Written : modify?"
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
+        }
+
+        btnSecretDiary?.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 
-    fun readDiary(fName: String?): String? {
+    private fun readDiary(fName: String?): String? {
         var diaryStr: String? = null
-        val inFs: FileInputStream
         try {
-            inFs = openFileInput(fName)
+            val inFs = openFileInput(fName)
             val txt = ByteArray(500)
             inFs.read(txt)
             inFs.close()
-            diaryStr = String(txt).trim { it <= ' ' }
-            btnWrite!!.text = "수정 하기"
+            diaryStr = String(txt).trim()
+            btnWrite?.text = "Written : modify?"
         } catch (e: IOException) {
-            edtDiary!!.hint = "일기 없음"
-            btnWrite!!.text = "새로 저장"
+            edtDiary?.hint = "Write your own daylife"
+            btnWrite?.text = "New Writing"
         }
         return diaryStr
     }
